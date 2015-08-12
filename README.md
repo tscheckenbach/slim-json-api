@@ -12,7 +12,7 @@ Using composer you can add use this as your composer.json
     {
         "require": {
             "slim/slim": "2.3.*",
-            "entomb/slim-json-api": "dev-master"
+            "tscheckenbach/slim-json-api": "dev-master"
         }
     }
 
