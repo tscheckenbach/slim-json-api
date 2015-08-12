@@ -38,12 +38,13 @@ class JsonApiMiddleware extends \Slim\Middleware
             '/return', function () use ($app) {
 
             $app->render(
-                200, [
-                'method'  => $app->request()->getMethod(),
-                'name'    => $app->request()->get('name'),
-                'headers' => $app->request()->headers(),
-                'params'  => $app->request()->params(),
-            ]
+                200,
+                [
+                   'method'  => $app->request()->getMethod(),
+                   'name'    => $app->request()->get('name'),
+                   'headers' => $app->request()->headers(),
+                   'params'  => $app->request()->params(),
+                ]
             );
         }
         );
@@ -51,10 +52,19 @@ class JsonApiMiddleware extends \Slim\Middleware
         // Generic error handler
         $app->error(
             function (Exception $e) use ($app) {
+                $statusCode = (empty ($e->getCode()))
+                    ? 500
+                    : $e->getCode();
+
+                $errorMessage = (ini_get('display_errors') == 1)
+                    ? \JsonApiMiddleware::_errorType($e->getCode()) . ": " . $e->getMessage() . " - In File: " . $e->getFile() . " on Line: " . $e->getLine()
+                    : 'Server error';
+
                 $app->render(
-                    500, [
-                    'error' => \JsonApiMiddleware::_errorType($e->getCode()) . ": " . $e->getMessage(),
-                ]
+                    $statusCode,
+                    [
+                        'error' => $errorMessage,
+                    ]
                 );
             }
         );
@@ -64,8 +74,8 @@ class JsonApiMiddleware extends \Slim\Middleware
             function () use ($app) {
                 $app->render(
                     404, [
-                    'error' => 'Invalid route',
-                ]
+                           'error' => 'Invalid route',
+                       ]
                 );
             }
         );
@@ -80,11 +90,7 @@ class JsonApiMiddleware extends \Slim\Middleware
             }
 
             if (strlen($app->response()->body()) == 0) {
-                $app->render(
-                    204, [
-                    'error' => 'Empty response',
-                ]
-                );
+                $app->render(204);
             }
         }
         );
@@ -135,5 +141,4 @@ class JsonApiMiddleware extends \Slim\Middleware
                 return 'USER_DEPRECATED';
         }
     }
-
 }
