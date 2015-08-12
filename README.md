@@ -1,5 +1,5 @@
 #Changes
-- removed standard response keys (status/error/flash)
+- removed standard response keys (status + error)
 - on exception => return thrown code or 500 if not set
 - return error message only if "display_errors" is 1
 - return 204 on empty response
