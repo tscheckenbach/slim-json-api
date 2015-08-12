@@ -1,3 +1,9 @@
+#Changes
+- removed standard response keys (status/error/flash)
+- on exception => return thrown code or 500 if not set
+- return error message only if "display_errors" is 1
+- return 204 on empty response
+
 #slim-jsonAPI
 [![Latest Stable Version](https://poser.pugx.org/tscheckenbach/slim-json-api/v/stable.png)](https://packagist.org/packages/tscheckenbach/slim-json-api)
 [![Total Downloads](https://poser.pugx.org/tscheckenbach/slim-json-api/downloads.png)](https://packagist.org/packages/tscheckenbach/slim-json-api)
