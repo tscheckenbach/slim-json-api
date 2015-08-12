@@ -2,26 +2,27 @@
 /**
  * jsonAPI - Slim extension to implement fast JSON API's
  *
- * @package Slim
+ * @package    Slim
  * @subpackage View
- * @author Jonathan Tavares <the.entomb@gmail.com>
- * @license GNU General Public License, version 3
+ * @author     Jonathan Tavares <the.entomb@gmail.com>
+ * @license    GNU General Public License, version 3
  * @filesource
  *
  *
-*/
+ */
 
 
 /**
  * JsonApiView - view wrapper for json responses (with error code).
  *
- * @package Slim
+ * @package    Slim
  * @subpackage View
- * @author Jonathan Tavares <the.entomb@gmail.com>
- * @license GNU General Public License, version 3
+ * @author     Jonathan Tavares <the.entomb@gmail.com>, Thorsten Scheckenbach <t.scheckenbach@creativation.de>
+ * @license    GNU General Public License, version 3
  * @filesource
  */
-class JsonApiView extends \Slim\View {
+class JsonApiView extends \Slim\View
+{
 
     /**
      * Bitmask consisting of <b>JSON_HEX_QUOT</b>,
@@ -47,38 +48,21 @@ class JsonApiView extends \Slim\View {
      */
     public $contentType = 'application/json';
 
-    public function render($status=200, $data = NULL) {
+    public function render($status = 200, $data = NULL)
+    {
         $app = \Slim\Slim::getInstance();
 
-        $status = intval($status);
+        $status = (int)$status;
 
         $response = $this->all();
 
-        //append error bool
-        if (!$this->has('error')) {
-            $response['error'] = false;
-        }
-
-        //append status code
-        $response['status'] = $status;
-
-		//add flash messages
-		if(isset($this->data->flash) && is_object($this->data->flash)){
-		    $flash = $this->data->flash->getMessages();
-            if (count($flash)) {
-                $response['flash'] = $flash;   
-            } else {
-                unset($response['flash']);
-            }
-		}
-		
         $app->response()->status($status);
         $app->response()->header('Content-Type', $this->contentType);
 
         $jsonp_callback = $app->request->get('callback', null);
 
-        if($jsonp_callback !== null){
-            $app->response()->body($jsonp_callback.'('.json_encode($response, $this->encodingOptions).')');
+        if ($jsonp_callback !== null) {
+            $app->response()->body($jsonp_callback . '(' . json_encode($response, $this->encodingOptions) . ')');
         } else {
             $app->response()->body(json_encode($response, $this->encodingOptions));
         }

@@ -2,93 +2,106 @@
 /**
  * jsonAPI - Slim extension to implement fast JSON API's
  *
- * @package Slim
+ * @package    Slim
  * @subpackage Middleware
- * @author Jonathan Tavares <the.entomb@gmail.com>
- * @license GNU General Public License, version 3
+ * @author     Jonathan Tavares <the.entomb@gmail.com>
+ * @license    GNU General Public License, version 3
  * @filesource
  *
  *
-*/
+ */
 
 /**
  * JsonApiMiddleware - Middleware that sets a bunch of static routes for easy bootstrapping of json API's
  *
- * @package Slim
+ * @package    Slim
  * @subpackage View
- * @author Jonathan Tavares <the.entomb@gmail.com>
- * @license GNU General Public License, version 3
+ * @author     Jonathan Tavares <the.entomb@gmail.com>, Thorsten Scheckenbach <t.scheckenbach@creativation.de>
+ * @license    GNU General Public License, version 3
  * @filesource
  */
-class JsonApiMiddleware extends \Slim\Middleware {
-
+class JsonApiMiddleware extends \Slim\Middleware
+{
 
     /**
      * Sets a buch of static API calls
      *
      */
-    function __construct(){
+    function __construct()
+    {
 
         $app = \Slim\Slim::getInstance();
         $app->config('debug', false);
 
         // Mirrors the API request
-        $app->get('/return', function() use ($app) {
+        $app->get(
+            '/return', function () use ($app) {
 
-            $app->render(200,array(
-                'method'    => $app->request()->getMethod(),
-                'name'      => $app->request()->get('name'),
-                'headers'   => $app->request()->headers(),
-                'params'    => $app->request()->params(),
-            ));
-        });
+            $app->render(
+                200, [
+                'method'  => $app->request()->getMethod(),
+                'name'    => $app->request()->get('name'),
+                'headers' => $app->request()->headers(),
+                'params'  => $app->request()->params(),
+            ]
+            );
+        }
+        );
 
         // Generic error handler
-        $app->error(function (Exception $e) use ($app) {
-
-
-            $app->render(500,array(
-                'error' => true,
-                'msg'   => \JsonApiMiddleware::_errorType($e->getCode()) .": ". $e->getMessage(),
-            ));
-        });
+        $app->error(
+            function (Exception $e) use ($app) {
+                $app->render(
+                    500, [
+                    'error' => \JsonApiMiddleware::_errorType($e->getCode()) . ": " . $e->getMessage(),
+                ]
+                );
+            }
+        );
 
         // Not found handler (invalid routes, invalid method types)
-        $app->notFound(function() use ($app) {
-            $app->render(404,array(
-                'error' => TRUE,
-                'msg'   => 'Invalid route',
-            ));
-        });
+        $app->notFound(
+            function () use ($app) {
+                $app->render(
+                    404, [
+                    'error' => 'Invalid route',
+                ]
+                );
+            }
+        );
 
         // Handle Empty response body
-        $app->hook('slim.after.router', function () use ($app) {
+        $app->hook(
+            'slim.after.router', function () use ($app) {
             //Fix sugested by: https://github.com/bdpsoft
             //Will allow download request to flow
-            if($app->response()->header('Content-Type')==='application/octet-stream'){
+            if ($app->response()->header('Content-Type') === 'application/octet-stream') {
                 return;
             }
 
             if (strlen($app->response()->body()) == 0) {
-                $app->render(500,array(
-                    'error' => TRUE,
-                    'msg'   => 'Empty response',
-                ));
+                $app->render(
+                    204, [
+                    'error' => 'Empty response',
+                ]
+                );
             }
-        });
+        }
+        );
 
     }
 
     /**
      * Call next
      */
-    function call(){
+    function call()
+    {
         return $this->next->call();
     }
 
-    static function _errorType($type=1){
-        switch($type)
-        {
+    static function _errorType($type = 1)
+    {
+        switch ($type) {
             default:
             case E_ERROR: // 1 //
                 return 'ERROR';
