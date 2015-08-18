@@ -1,5 +1,6 @@
 #Changes
 - removed standard response keys (status + error)
+- added option to response with scalar value (second parameter of $slimApp->render() must still be an array) 
 - on exception => return thrown code or 500 if not set
 - return error message only if "display_errors" is 1
 - return 204 on empty response

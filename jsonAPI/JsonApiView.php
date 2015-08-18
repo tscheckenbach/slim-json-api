@@ -67,7 +67,7 @@ class JsonApiView extends \Slim\View
         }
 
         // if $response array contains only one scalar value, extract it
-        if (count($response) === 1 && is_scalar($response[0])) {
+        if (isset($response[0]) && count($response) === 1 && is_scalar($response[0])) {
             $response = $response[0];
         }
 
